@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router'
 import { useStyles } from './styles'
 
 function App(): React.JSX.Element {
+  const openFile = async (): Promise<void> => {
+    await window.electron.ipcRenderer.invoke('openFile')
+  }
   const navigate = useNavigate()
   const styles = useStyles()
   return (
@@ -25,7 +28,7 @@ function App(): React.JSX.Element {
               }
             />
           </Card>
-          <Card className={styles.card} orientation="horizontal">
+          <Card className={styles.card} orientation="horizontal" onClick={openFile}>
             <CardHeader
               header={<Text weight="semibold">開く</Text>}
               description={

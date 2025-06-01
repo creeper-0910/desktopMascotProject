@@ -1,7 +1,25 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { close, DataType, define, open } from 'ffi-rs'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+const libPath =
+  process.platform === 'win32'
+    ? process.resourcesPath + '/extra/extra.dll'
+    : process.resourcesPath + '/extra/extra.so'
+console.log(libPath)
+open({
+  library: 'libextra',
+  path: libPath
+})
+
+const extra = define({
+  FileSelect: {
+    library: 'libextra',
+    retType: DataType.String,
+    paramsType: [DataType.String]
+  }
+})
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -49,7 +67,12 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.handle('openFile', async () => {
+    const selectedFile = extra.FileSelect([process.resourcesPath])
+    if (selectedFile != '') {
+      console.log(selectedFile)
+    }
+  })
 
   createWindow()
 
@@ -64,6 +87,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  close('extra')
   if (process.platform !== 'darwin') {
     app.quit()
   }
