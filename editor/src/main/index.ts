@@ -85,22 +85,19 @@ app.whenReady().then(() => {
     event.returnValue = existsSync(join(defaultProjectDirectory, projectName))
   })
 
-  ipcMain.handle('initProject', async (_, projectName: string) => {
+  ipcMain.handle('initProject', async (_, values) => {
     const result = {
       path: '',
       error: false,
       errorMsg: ''
     }
-    const defaultProjectStracture = {
-      projectName: projectName
-    }
     try {
-      await fs.mkdir(join(defaultProjectDirectory, projectName), { recursive: true })
+      await fs.mkdir(join(defaultProjectDirectory, values.PROJECT_NAME), { recursive: true })
       await fs.writeFile(
-        join(defaultProjectDirectory, projectName, 'project.json'),
-        JSON.stringify(defaultProjectStracture)
+        join(defaultProjectDirectory, values.PROJECT_NAME, 'project.json'),
+        JSON.stringify(values)
       )
-      result.path = join(defaultProjectDirectory, projectName, 'project.json')
+      result.path = join(defaultProjectDirectory, values.PROJECT_NAME, 'project.json')
     } catch (error) {
       result.error = true
       result.errorMsg = typeof error === 'string' ? error : String(error)

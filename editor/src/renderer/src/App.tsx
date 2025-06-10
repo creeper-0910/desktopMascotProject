@@ -74,7 +74,7 @@ function App(): React.JSX.Element {
   }
   //ファイルを作成&読み込みしてからJSONを受け渡しページ遷移
   const createNewProject = async (values): Promise<void> => {
-    const response = await window.electron.ipcRenderer.invoke('initProject', values.PROJECT_NAME)
+    const response = await window.electron.ipcRenderer.invoke('initProject', values)
     console.log(response)
     const data = await window.electron.ipcRenderer.invoke('readFile', response.path)
     console.log(data)
