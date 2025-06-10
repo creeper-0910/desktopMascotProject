@@ -1,7 +1,11 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
+import { existsSync, promises as fs } from 'fs'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+
+const defaultProjectDirectory = app.getPath('documents')
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -48,7 +52,7 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
+  // ファイル選択ダイアログ
   ipcMain.handle('openFile', async () => {
     return await dialog.showOpenDialog({
       properties: ['openFile'],
@@ -59,6 +63,49 @@ app.whenReady().then(() => {
         }
       ]
     })
+  })
+
+  ipcMain.handle('readFile', async (_, paths: string) => {
+    const result = {
+      data: {},
+      error: false,
+      errorMsg: ''
+    }
+    try {
+      const data = await fs.readFile(paths, 'utf8')
+      result.data = JSON.parse(data)
+    } catch (error) {
+      result.error = true
+      result.errorMsg = typeof error === 'string' ? error : String(error)
+    }
+    return result
+  })
+
+  ipcMain.on('isExist', (event, projectName) => {
+    event.returnValue = existsSync(join(defaultProjectDirectory, projectName))
+  })
+
+  ipcMain.handle('initProject', async (_, projectName: string) => {
+    const result = {
+      path: '',
+      error: false,
+      errorMsg: ''
+    }
+    const defaultProjectStracture = {
+      projectName: projectName
+    }
+    try {
+      await fs.mkdir(join(defaultProjectDirectory, projectName), { recursive: true })
+      await fs.writeFile(
+        join(defaultProjectDirectory, projectName, 'project.json'),
+        JSON.stringify(defaultProjectStracture)
+      )
+      result.path = join(defaultProjectDirectory, projectName, 'project.json')
+    } catch (error) {
+      result.error = true
+      result.errorMsg = typeof error === 'string' ? error : String(error)
+    }
+    return result
   })
 
   createWindow()

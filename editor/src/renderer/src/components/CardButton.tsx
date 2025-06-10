@@ -1,9 +1,8 @@
 import { Caption1, Card, CardHeader, Text } from '@fluentui/react-components'
 import { useStyles } from '@renderer/styles'
 import PropTypes from 'prop-types'
-import { ReactElement } from 'react'
 
-export function CardButton(props): ReactElement {
+export function CardButton(props): React.JSX.Element {
   const styles = useStyles()
   return (
     <Card className={styles.card} orientation="horizontal" {...props.options}>

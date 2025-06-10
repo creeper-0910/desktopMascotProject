@@ -1,6 +1,6 @@
 import { useStyles } from './styles'
 
-function App(): React.JSX.Element {
+function Edit(): React.JSX.Element {
   //const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
   const styles = useStyles()
   return (
@@ -10,4 +10,4 @@ function App(): React.JSX.Element {
   )
 }
 
-export default App
+export default Edit
