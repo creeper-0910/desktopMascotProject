@@ -24,6 +24,27 @@ function createWindow(): void {
     mainWindow.show()
   })
 
+  ipcMain.on('setTitle', (_, title) => {
+    if (title !== undefined) {
+      mainWindow.setTitle(`${app.getName()} - ${title}`)
+    } else {
+      mainWindow.setTitle(app.getName())
+    }
+  })
+
+  // ファイル選択ダイアログ
+  ipcMain.handle('openFile', async () => {
+    return await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [
+        {
+          name: 'プロジェクトファイル',
+          extensions: ['dsktm', 'json']
+        }
+      ]
+    })
+  })
+
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
@@ -52,19 +73,6 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // ファイル選択ダイアログ
-  ipcMain.handle('openFile', async () => {
-    return await dialog.showOpenDialog({
-      properties: ['openFile'],
-      filters: [
-        {
-          name: 'プロジェクトファイル',
-          extensions: ['dsktm', 'json']
-        }
-      ]
-    })
-  })
-
   ipcMain.handle('readFile', async (_, paths: string) => {
     const result = {
       data: {},
@@ -82,7 +90,7 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('isExist', (event, projectName) => {
-    event.returnValue = existsSync(join(defaultProjectDirectory, projectName))
+    event.returnValue = existsSync(join(defaultProjectDirectory, app.getName(), projectName))
   })
 
   ipcMain.handle('initProject', async (_, values) => {
@@ -92,12 +100,19 @@ app.whenReady().then(() => {
       errorMsg: ''
     }
     try {
-      await fs.mkdir(join(defaultProjectDirectory, values.PROJECT_NAME), { recursive: true })
+      await fs.mkdir(join(defaultProjectDirectory, app.getName(), values.PROJECT_NAME), {
+        recursive: true
+      })
       await fs.writeFile(
-        join(defaultProjectDirectory, values.PROJECT_NAME, 'project.json'),
+        join(defaultProjectDirectory, app.getName(), values.PROJECT_NAME, 'project.json'),
         JSON.stringify(values)
       )
-      result.path = join(defaultProjectDirectory, values.PROJECT_NAME, 'project.json')
+      result.path = join(
+        defaultProjectDirectory,
+        app.getName(),
+        values.PROJECT_NAME,
+        'project.json'
+      )
     } catch (error) {
       result.error = true
       result.errorMsg = typeof error === 'string' ? error : String(error)

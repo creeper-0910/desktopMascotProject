@@ -14,12 +14,19 @@ import {
   useRestoreFocusTarget
 } from '@fluentui/react-components'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as yup from 'yup'
 import { CardButton } from './components/CardButton'
-import { EXISTS, REQIRED_MESSAGE, VALUE_SIZE } from './components/Const'
+import {
+  COMMON_MESSAGE,
+  EXISTS,
+  INVALID_VALUE,
+  REQIRED_MESSAGE,
+  VALUE_SIZE
+} from './components/Const'
+import { InfoDialog } from './components/InfoDialog'
 import { useStyles } from './styles'
 
 const defaultValues = {
@@ -38,6 +45,23 @@ const schema = yup.object().shape({
       message: EXISTS.PROJECT_NAME,
       test: (value) => {
         return !window.electron.ipcRenderer.sendSync('isExist', value)
+      }
+    })
+    .test({
+      name: 'PROJECT_NAME',
+      message: INVALID_VALUE.PROJECT_NAME,
+      test: (value) => {
+        // eslint-disable-next-line
+        const regexp = /[\\\/:\*\?\"<>\|]/
+        return !regexp.test(value)
+      }
+    })
+    .test({
+      name: 'PROJECT_NAME',
+      message: INVALID_VALUE.LAST_DOT,
+      test: (value) => {
+        const regexp = /[.\s]$/
+        return !regexp.test(value)
       }
     }),
   SIZE_X: yup
@@ -63,22 +87,44 @@ function App(): React.JSX.Element {
   })
   const styles = useStyles()
   const [open, setOpen] = useState(false)
+  const [err, setErr] = useState(false)
+  const errorMsg = useRef({})
   const restoreFocusTargetAttribute = useRestoreFocusTarget()
+  const showErrorMessage = (msg): void => {
+    errorMsg.current = {
+      TITLE: COMMON_MESSAGE.ERROR.TITLE,
+      CONTENTS: `${COMMON_MESSAGE.ERROR.CONTENTS}${msg}`
+    }
+    setErr(true)
+  }
   //ファイルを読み込んでからJSONを受け渡しページ遷移
   const openFile = async (): Promise<void> => {
     const response = await window.electron.ipcRenderer.invoke('openFile')
     if (!response.canceled) {
       const data = await window.electron.ipcRenderer.invoke('readFile', response.filePaths[0])
-      console.log(data)
+      if (!data.error) {
+        navigate('/edit', { state: { project: data.data } })
+      } else {
+        showErrorMessage(data.errorMsg)
+      }
     }
   }
   //ファイルを作成&読み込みしてからJSONを受け渡しページ遷移
   const createNewProject = async (values): Promise<void> => {
     const response = await window.electron.ipcRenderer.invoke('initProject', values)
-    console.log(response)
-    const data = await window.electron.ipcRenderer.invoke('readFile', response.path)
-    console.log(data)
+    if (!response.error) {
+      const data = await window.electron.ipcRenderer.invoke('readFile', response.path)
+      if (!data.error) {
+        navigate('/edit', { state: { project: data.data } })
+      } else {
+        showErrorMessage(data.errorMsg)
+      }
+    } else {
+      showErrorMessage(response.errorMsg)
+    }
   }
+
+  window.electron.ipcRenderer.send('setTitle')
   return (
     <>
       <div className={`${mergeClasses(styles.StartUIPadding, styles.MainBG)} flex flex-col gap-4`}>
@@ -139,6 +185,7 @@ function App(): React.JSX.Element {
                                 validationState={fieldState.error ? 'error' : 'none'}
                                 validationMessage={fieldState.error?.message}
                               >
+                                {/*@ts-ignore 修正が難しい*/}
                                 <Input {...field} />
                               </Field>
                             </>
@@ -154,6 +201,7 @@ function App(): React.JSX.Element {
                                 validationState={fieldState.error ? 'error' : 'none'}
                                 validationMessage={fieldState.error?.message}
                               >
+                                {/*@ts-ignore 修正が難しい*/}
                                 <Input {...field} />
                               </Field>
                             </>
@@ -176,6 +224,7 @@ function App(): React.JSX.Element {
           />
         </div>
       </div>
+      <InfoDialog open={err} setOpen={setErr} message={errorMsg.current} />
     </>
   )
 }
