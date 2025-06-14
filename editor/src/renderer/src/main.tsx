@@ -6,7 +6,6 @@ import { createRoot } from 'react-dom/client'
 import { HashRouter, Route, Routes } from 'react-router'
 import App from './App'
 import Edit from './Edit'
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <FluentProvider theme={webDarkTheme} id="provider">

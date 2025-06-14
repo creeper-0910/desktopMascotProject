@@ -1,25 +1,14 @@
-export const REQIRED_MESSAGE = {
-  INPUT: '入力必須の項目です',
-  NUMBER: '数値を入力してください',
-  VALUE: '値を入力してください',
-  PROJECT_NAME: 'プロジェクト名を入力してください'
-}
-
-export const VALUE_SIZE = {
-  BIG: '値が大きすぎます',
-  LESS: '値が小さすぎます'
-}
-
-export const INVALID_VALUE = {
+export const INVALID = {
   PROJECT_NAME: 'プロジェクト名に使用できない文字が含まれています',
-  LAST_DOT: 'プロジェクト名の最後にドットを使用することはできません'
+  LAST_DOT: 'プロジェクト名の最後にドットを使用することはできません',
+  VALUE: '不正な値です'
 }
 
 export const EXISTS = {
   PROJECT_NAME: '既に存在するプロジェクトです'
 }
 
-export const COMMON_MESSAGE = {
+export const COMMON = {
   ERROR: {
     TITLE: 'エラー',
     CONTENTS: '以下のエラーが発生しました。\n'

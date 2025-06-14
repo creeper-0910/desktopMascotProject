@@ -13,22 +13,19 @@ import {
   mergeClasses,
   useRestoreFocusTarget
 } from '@fluentui/react-components'
+
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import * as yup from 'yup'
+import { ja } from 'yup-locales'
 import { CardButton } from './components/CardButton'
-import {
-  COMMON_MESSAGE,
-  EXISTS,
-  INVALID_VALUE,
-  REQIRED_MESSAGE,
-  VALUE_SIZE
-} from './components/Const'
+import { COMMON, EXISTS, INVALID } from './components/Const'
+import { Header } from './components/Header'
 import { InfoDialog } from './components/InfoDialog'
 import { useStyles } from './styles'
-
+yup.setLocale(ja)
 const defaultValues = {
   PROJECT_NAME: '',
   SIZE_X: 500,
@@ -38,8 +35,9 @@ const defaultValues = {
 const schema = yup.object().shape({
   PROJECT_NAME: yup
     .string()
-    .required(REQIRED_MESSAGE.PROJECT_NAME)
-    .max(20, VALUE_SIZE.BIG)
+    .label('プロジェクト名')
+    .required()
+    .max(20)
     .test({
       name: 'PROJECT_NAME',
       message: EXISTS.PROJECT_NAME,
@@ -49,7 +47,7 @@ const schema = yup.object().shape({
     })
     .test({
       name: 'PROJECT_NAME',
-      message: INVALID_VALUE.PROJECT_NAME,
+      message: INVALID.PROJECT_NAME,
       test: (value) => {
         // eslint-disable-next-line
         const regexp = /[\\\/:\*\?\"<>\|]/
@@ -58,7 +56,7 @@ const schema = yup.object().shape({
     })
     .test({
       name: 'PROJECT_NAME',
-      message: INVALID_VALUE.LAST_DOT,
+      message: INVALID.LAST_DOT,
       test: (value) => {
         const regexp = /[.\s]$/
         return !regexp.test(value)
@@ -66,14 +64,16 @@ const schema = yup.object().shape({
     }),
   SIZE_X: yup
     .number()
-    .required(REQIRED_MESSAGE.INPUT)
-    .typeError(REQIRED_MESSAGE.NUMBER)
-    .min(250, VALUE_SIZE.LESS),
+    .label('幅')
+    .transform((value) => (isNaN(value) ? undefined : value))
+    .min(250)
+    .required(),
   SIZE_Y: yup
     .number()
-    .required(REQIRED_MESSAGE.INPUT)
-    .typeError(REQIRED_MESSAGE.NUMBER)
-    .min(250, VALUE_SIZE.LESS)
+    .label('高さ')
+    .transform((value) => (isNaN(value) ? undefined : value))
+    .min(250)
+    .required()
 })
 
 type NewProjectForm = yup.InferType<typeof schema>
@@ -92,8 +92,8 @@ function App(): React.JSX.Element {
   const restoreFocusTargetAttribute = useRestoreFocusTarget()
   const showErrorMessage = (msg): void => {
     errorMsg.current = {
-      TITLE: COMMON_MESSAGE.ERROR.TITLE,
-      CONTENTS: `${COMMON_MESSAGE.ERROR.CONTENTS}${msg}`
+      TITLE: COMMON.ERROR.TITLE,
+      CONTENTS: `${COMMON.ERROR.CONTENTS}${msg}`
     }
     setErr(true)
   }
@@ -127,6 +127,7 @@ function App(): React.JSX.Element {
   window.electron.ipcRenderer.send('setTitle')
   return (
     <>
+      <Header />
       <div className={`${mergeClasses(styles.StartUIPadding, styles.MainBG)} flex flex-col gap-4`}>
         <Subtitle1>開始</Subtitle1>
         <div className="flex gap-3">
@@ -178,7 +179,7 @@ function App(): React.JSX.Element {
                       <div className="flex">
                         <Controller
                           control={control}
-                          name="SIZE_X"
+                          name="SIZE_Y"
                           render={({ field, fieldState }) => (
                             <>
                               <Field
@@ -194,7 +195,7 @@ function App(): React.JSX.Element {
                         <Body1 className="m-2 text-center">✕</Body1>
                         <Controller
                           control={control}
-                          name="SIZE_Y"
+                          name="SIZE_X"
                           render={({ field, fieldState }) => (
                             <>
                               <Field

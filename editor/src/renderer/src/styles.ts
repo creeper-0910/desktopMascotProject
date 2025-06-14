@@ -4,7 +4,7 @@ export const useStyles = makeStyles({
   MainBG: {
     backgroundColor: tokens.colorNeutralBackground2,
     width: '100%',
-    height: '100%'
+    height: '100svh'
   },
   StartUIPadding: {
     padding: '30px 0 30px 50px'

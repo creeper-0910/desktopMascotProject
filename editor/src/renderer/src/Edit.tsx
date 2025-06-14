@@ -7,9 +7,18 @@ function Edit(): React.JSX.Element {
   const data = location.state
   console.log(data.project)
   window.electron.ipcRenderer.send('setTitle', data.project.PROJECT_NAME)
+
   return (
     <>
-      <div className={styles.MainBG}></div>
+      <div className={styles.MainBG}>
+        <div
+          style={{
+            width: data.project.SIZE_X,
+            height: data.project.SIZE_Y,
+            backgroundColor: 'white'
+          }}
+        ></div>
+      </div>
     </>
   )
 }

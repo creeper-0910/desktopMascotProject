@@ -41,6 +41,9 @@ importers:
       yup:
         specifier: ^1.6.1
         version: 1.6.1
+      yup-locales:
+        specifier: ^1.2.28
+        version: 1.2.28
     devDependencies:
       '@electron-toolkit/eslint-config-prettier':
         specifier: ^3.0.0
@@ -3625,6 +3628,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  yup-locales@1.2.28:
+    resolution: {integrity: sha512-q2p5XDVThFXTLOOV1DgMbpMOfrxfZTjYSkS1WRWco6YZJOeHrbuM3ISytrLaYa8TiX/YPtE9tuQmMiUyTBZDIw==}
 
   yup@1.6.1:
     resolution: {integrity: sha512-JED8pB50qbA4FOkDol0bYF/p60qSEDQqBD0/qeIrUCG1KbPBIQ776fCUNb9ldbPcSTxA69g/47XTo4TqWiuXOA==}
@@ -8171,6 +8177,8 @@ snapshots:
       fd-slicer: 1.1.0
 
   yocto-queue@0.1.0: {}
+
+  yup-locales@1.2.28: {}
 
   yup@1.6.1:
     dependencies:
