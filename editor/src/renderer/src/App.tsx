@@ -126,7 +126,7 @@ function App(): React.JSX.Element {
 
   window.electron.ipcRenderer.send('setTitle')
   return (
-    <>
+    <div className={styles.Wrapper}>
       <Header />
       <div className={`${mergeClasses(styles.StartUIPadding, styles.MainBG)} flex flex-col gap-4`}>
         <Subtitle1>開始</Subtitle1>
@@ -226,7 +226,7 @@ function App(): React.JSX.Element {
         </div>
       </div>
       <InfoDialog open={err} setOpen={setErr} message={errorMsg.current} />
-    </>
+    </div>
   )
 }
 
