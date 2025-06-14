@@ -1,10 +1,16 @@
 import { makeStyles, tokens } from '@fluentui/react-components'
 
 export const useStyles = makeStyles({
+  Wrapper: {
+    width: '100dvw',
+    minHeight: '100svh',
+    display: 'flex',
+    flexDirection: 'column'
+  },
   MainBG: {
     backgroundColor: tokens.colorNeutralBackground2,
     width: '100%',
-    height: '100svh'
+    flex: 1
   },
   StartUIPadding: {
     padding: '30px 0 30px 50px'
