@@ -1,10 +1,46 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
-import { existsSync, promises as fs } from 'fs'
+import { existsSync, promises as fsp, readFileSync } from 'fs'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 
 const defaultProjectDirectory = app.getPath('documents')
+
+class LanguageManager {
+  static data = {}
+  static language = {}
+  static init(): void {
+    this.setLanguage()
+  }
+  static setLanguage(lng: string = ''): void {
+    const langList = JSON.parse(
+      readFileSync(join(process.resourcesPath, '/lang/lang.json'), 'utf8')
+    )
+    const fallbackLang = JSON.parse(
+      readFileSync(
+        join(process.resourcesPath, '/lang/', langList[langList['fallback']['key']]['FileName']),
+        'utf8'
+      )
+    )
+    if (lng === '') {
+      lng = app.getLocale()
+    }
+    if (
+      langList['fallback']['key'] !== lng &&
+      Object.prototype.hasOwnProperty.call(langList, lng)
+    ) {
+      this.language = {
+        [lng]: langList[lng]['localeName']
+      }
+      this.data = JSON.parse(
+        readFileSync(join(process.resourcesPath, '/lang/', langList[lng]['FileName']), 'utf8')
+      )
+    }
+    this.data = { ...fallbackLang, ...this.data }
+    console.log(lng)
+    console.log(this.data)
+  }
+}
 
 function createWindow(): void {
   // Create the browser window.
@@ -38,10 +74,20 @@ function createWindow(): void {
       properties: ['openFile'],
       filters: [
         {
-          name: 'プロジェクトファイル',
+          // @ts-ignore ファイルから読み込むデータに含まれています
+          name: LanguageManager.data.PROJECT_FILE,
           extensions: ['dsktm', 'json']
         }
       ]
+    })
+  })
+
+  // バージョン表示ダイアログ
+  ipcMain.handle('openAbout', async (_, detail: string) => {
+    return await dialog.showMessageBox(mainWindow, {
+      message: `${app.getName()} ${app.getVersion()}`,
+      detail: detail,
+      icon: icon
     })
   })
 
@@ -65,7 +111,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
-
+  LanguageManager.init()
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -80,7 +126,7 @@ app.whenReady().then(() => {
       errorMsg: ''
     }
     try {
-      const data = await fs.readFile(paths, 'utf8')
+      const data = await fsp.readFile(paths, 'utf8')
       result.data = JSON.parse(data)
     } catch (error) {
       result.error = true
@@ -93,6 +139,10 @@ app.whenReady().then(() => {
     event.returnValue = existsSync(join(defaultProjectDirectory, app.getName(), projectName))
   })
 
+  ipcMain.on('getLanguage', (event) => {
+    event.returnValue = LanguageManager.data
+  })
+
   ipcMain.handle('initProject', async (_, values) => {
     const result = {
       path: '',
@@ -100,10 +150,10 @@ app.whenReady().then(() => {
       errorMsg: ''
     }
     try {
-      await fs.mkdir(join(defaultProjectDirectory, app.getName(), values.PROJECT_NAME), {
+      await fsp.mkdir(join(defaultProjectDirectory, app.getName(), values.PROJECT_NAME), {
         recursive: true
       })
-      await fs.writeFile(
+      await fsp.writeFile(
         join(defaultProjectDirectory, app.getName(), values.PROJECT_NAME, 'project.json'),
         JSON.stringify(values)
       )

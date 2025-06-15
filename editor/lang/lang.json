@@ -1,0 +1,13 @@
+{
+  "ja": {
+    "localeName": "日本語",
+    "FileName": "ja.json"
+  },
+  "en-us": {
+    "localeName": "English",
+    "FileName": "en.json"
+  },
+  "fallback": {
+    "key": "en-us"
+  }
+}

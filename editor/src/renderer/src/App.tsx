@@ -21,9 +21,9 @@ import { useNavigate } from 'react-router'
 import * as yup from 'yup'
 import { ja } from 'yup-locales'
 import { CardButton } from './components/CardButton'
-import { COMMON, EXISTS, INVALID } from './components/Const'
-import { Header } from './components/Header'
+import { lang } from './components/Const'
 import { InfoDialog } from './components/InfoDialog'
+import { MenuBar } from './components/MenuBar'
 import { useStyles } from './styles'
 yup.setLocale(ja)
 const defaultValues = {
@@ -35,19 +35,19 @@ const defaultValues = {
 const schema = yup.object().shape({
   PROJECT_NAME: yup
     .string()
-    .label('プロジェクト名')
+    .label(lang.PROJECT_NAME)
     .required()
     .max(20)
     .test({
       name: 'PROJECT_NAME',
-      message: EXISTS.PROJECT_NAME,
+      message: lang.EXISTS_PROJECT_NAME,
       test: (value) => {
         return !window.electron.ipcRenderer.sendSync('isExist', value)
       }
     })
     .test({
       name: 'PROJECT_NAME',
-      message: INVALID.PROJECT_NAME,
+      message: lang.INVALID_PROJECT_NAME,
       test: (value) => {
         // eslint-disable-next-line
         const regexp = /[\\\/:\*\?\"<>\|]/
@@ -56,7 +56,7 @@ const schema = yup.object().shape({
     })
     .test({
       name: 'PROJECT_NAME',
-      message: INVALID.LAST_DOT,
+      message: lang.INVALID_LAST_DOT,
       test: (value) => {
         const regexp = /[.\s]$/
         return !regexp.test(value)
@@ -64,13 +64,13 @@ const schema = yup.object().shape({
     }),
   SIZE_X: yup
     .number()
-    .label('幅')
+    .label(lang.WIDTH)
     .transform((value) => (isNaN(value) ? undefined : value))
     .min(250)
     .required(),
   SIZE_Y: yup
     .number()
-    .label('高さ')
+    .label(lang.HEIGHT)
     .transform((value) => (isNaN(value) ? undefined : value))
     .min(250)
     .required()
@@ -92,8 +92,8 @@ function App(): React.JSX.Element {
   const restoreFocusTargetAttribute = useRestoreFocusTarget()
   const showErrorMessage = (msg): void => {
     errorMsg.current = {
-      TITLE: COMMON.ERROR.TITLE,
-      CONTENTS: `${COMMON.ERROR.CONTENTS}${msg}`
+      TITLE: lang.ERROR_TITLE,
+      CONTENTS: `${lang.ERROR_MESSAGE}${msg}`
     }
     setErr(true)
   }
@@ -127,13 +127,13 @@ function App(): React.JSX.Element {
   window.electron.ipcRenderer.send('setTitle')
   return (
     <div className={styles.Wrapper}>
-      <Header />
+      <MenuBar />
       <div className={`${mergeClasses(styles.StartUIPadding, styles.MainBG)} flex flex-col gap-4`}>
-        <Subtitle1>開始</Subtitle1>
+        <Subtitle1>{lang.START}</Subtitle1>
         <div className="flex gap-3">
           <CardButton
-            title="新規プロジェクト"
-            subtitle="新しいプロジェクトを作成します"
+            title={lang.NEW_PROJECT}
+            subtitle={lang.NEW_PROJECT_MESSAGE}
             options={{
               ...restoreFocusTargetAttribute,
               onClick: () => {
@@ -150,7 +150,7 @@ function App(): React.JSX.Element {
           >
             <DialogSurface>
               <DialogBody>
-                <DialogTitle>新規作成</DialogTitle>
+                <DialogTitle>{lang.CREATE_NEW}</DialogTitle>
                 <DialogContent>
                   {/* プロジェクト名
                   <br />
@@ -159,7 +159,7 @@ function App(): React.JSX.Element {
                   その他色々設定あれば */}
                   <form onSubmit={handleSubmit(createNewProject)}>
                     <div className="flex flex-col gap-1 mb-5">
-                      <Body1 className="text-center">プロジェクト名</Body1>
+                      <Body1 className="text-center">{lang.PROJECT_NAME}</Body1>
                       <Controller
                         control={control}
                         name="PROJECT_NAME"
@@ -175,7 +175,7 @@ function App(): React.JSX.Element {
                           </>
                         )}
                       />
-                      <Body1 className="text-center">プロジェクトのサイズ</Body1>
+                      <Body1 className="text-center">{lang.PROJECT_SIZE}</Body1>
                       <div className="flex">
                         <Controller
                           control={control}
@@ -211,7 +211,7 @@ function App(): React.JSX.Element {
                       </div>
                     </div>
                     <DialogActions>
-                      <Button type="submit">始める</Button>
+                      <Button type="submit">{lang.START}</Button>
                     </DialogActions>
                   </form>
                 </DialogContent>
@@ -219,8 +219,8 @@ function App(): React.JSX.Element {
             </DialogSurface>
           </Dialog>
           <CardButton
-            title="開く"
-            subtitle="既存のプロジェクトを開きます"
+            title={lang.OPEN_PROJECT}
+            subtitle={lang.OPEN_PROJECT_MESSAGE}
             options={{ onClick: openFile }}
           />
         </div>

@@ -1,0 +1,22 @@
+{
+  "INVALID_PROJECT_NAME": "プロジェクト名に使用できない文字が含まれています",
+  "INVALID_LAST_DOT": "プロジェクト名の最後にドットを使用することはできません",
+  "INVALID_VALUE": "不正な値です",
+  "EXISTS_PROJECT_NAME": "既に存在するプロジェクトです",
+  "PROJECT_NAME": "プロジェクト名",
+  "PROJECT_SIZE": "プロジェクトのサイズ",
+  "WIDTH": "幅",
+  "HEIGHT": "高さ",
+  "CREATE_NEW": "新規作成",
+  "ERROR_TITLE": "エラー",
+  "ERROR_MESSAGE": "以下のエラーが発生しました。\n",
+  "ABOUT_MESSAGE": "このソフトウェアはデスクトップマスコット作成ツールです。\n作者: 稲凪 咲(inagi saki)\n\n貢献者の皆様、ありがとうございます！",
+  "START": "開始",
+  "OPEN_PROJECT": "開く",
+  "OPEN_PROJECT_MESSAGE": "既存のプロジェクトを開きます",
+  "PROJECT_FILE": "プロジェクトファイル",
+  "NEW_PROJECT": "新規プロジェクト",
+  "NEW_PROJECT_MESSAGE": "新しいプロジェクトを作成します",
+  "MENU_FILE": "ファイル",
+  "MENU_HELP": "ヘルプ"
+}
