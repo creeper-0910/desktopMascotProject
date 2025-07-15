@@ -68,6 +68,10 @@ function createWindow(): void {
     }
   })
 
+  ipcMain.on('quit', () => {
+    app.quit()
+  })
+
   // ファイル選択ダイアログ
   ipcMain.handle('openFile', async () => {
     return await dialog.showOpenDialog(mainWindow, {
@@ -92,6 +96,22 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
+    if (details.url === new URL('#/version', mainWindow.webContents.getURL()).href) {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          parent: mainWindow,
+          frame: false,
+          modal: true,
+          fullscreenable: false,
+          ...(process.platform === 'linux' ? { icon } : {}),
+          webPreferences: {
+            preload: join(__dirname, '../preload/index.js'),
+            sandbox: false
+          }
+        }
+      }
+    }
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
@@ -104,7 +124,6 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

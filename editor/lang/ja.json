@@ -16,7 +16,9 @@
   "OPEN_PROJECT_MESSAGE": "既存のプロジェクトを開きます",
   "PROJECT_FILE": "プロジェクトファイル",
   "NEW_PROJECT": "新規プロジェクト",
+  "NEW_CREATE": "新規作成",
   "NEW_PROJECT_MESSAGE": "新しいプロジェクトを作成します",
   "MENU_FILE": "ファイル",
-  "MENU_HELP": "ヘルプ"
+  "MENU_HELP": "ヘルプ",
+  "QUIT": "終了"
 }

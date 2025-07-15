@@ -12,7 +12,15 @@ export const useStyles = makeStyles({
     width: '100%',
     flex: 1
   },
+  VersionBG: {
+    backgroundColor: tokens.colorNeutralBackground2,
+    width: '100%',
+    '-webkit-app-region': 'drag'
+  },
   StartUIPadding: {
+    padding: '30px 0 30px 50px'
+  },
+  VersionUIPadding: {
     padding: '30px 0 30px 50px'
   },
   card: {
